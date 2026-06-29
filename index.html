@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Biodata Studio | Premium</title>
+    <title>Aura Biodata Studio | Pro</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- html2pdf.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <!-- Phosphor Icons (Sleek Modern Icons) -->
+    <!-- Phosphor Icons (Premium Icons) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
     
     <style>
         /* Typography System */
@@ -22,47 +22,47 @@
         .font-serif-doc { font-family: 'Cormorant Garamond', serif; }
         .font-serif-heading { font-family: 'Playfair Display', serif; }
         .font-script { font-family: 'Great Vibes', cursive; }
+        .font-cinzel { font-family: 'Cinzel', serif; }
 
         /* Custom Scrollbar for Editor */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(251, 191, 36, 0.8); }
 
         /* Glassmorphism Utilities */
         .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .glass-input {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             color: #f8fafc;
             transition: all 0.3s ease;
         }
         .glass-input:focus {
-            background: rgba(255, 255, 255, 0.07);
+            background: rgba(255, 255, 255, 0.08);
             border-color: #fbbf24;
-            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.15);
             outline: none;
         }
 
-        /* Document Scale Wrapper for smaller screens */
+        /* Document Scale Wrapper */
         .preview-wrapper {
             display: flex;
             justify-content: center;
             transform-origin: top center;
-            padding-bottom: 40px;
+            padding-bottom: 60px;
         }
 
         /* Perfect A4 Document Configuration */
         .a4-document {
             width: 210mm;
-            height: 297mm; /* Exact A4 Height */
+            height: 297mm;
             background: #ffffff;
             position: relative;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
@@ -70,7 +70,6 @@
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Print Specifics */
         @media print {
             body, html { background: #fff !important; margin: 0 !important; padding: 0 !important; }
             .no-print { display: none !important; }
@@ -81,44 +80,59 @@
             }
         }
 
-        /* ----- THEMES ----- */
-        /* Theme 1: Royal Velvet */
+        /* --- 1. Royal Velvet --- */
         .theme-royal { background: #fdfbf7; color: #1e293b; }
-        .theme-royal .doc-border { border-color: #831843; } /* Burgundy */
-        .theme-royal .doc-accent-bg { background-color: #831843; color: white; }
+        .theme-royal .doc-border { border-color: #831843; } 
+        .theme-royal .doc-accent-bg { background-color: #831843; color: white; border-radius: 4px; }
         .theme-royal .doc-accent-text { color: #831843; }
         .theme-royal .doc-subtext { color: #64748b; }
         .theme-royal .doc-gold-text { color: #b45309; }
+        .theme-royal .font-display-title { font-family: 'Playfair Display', serif; text-transform: uppercase; letter-spacing: 0.2em; }
 
-        /* Theme 2: Enchanted Sage */
+        /* --- 2. Enchanted Sage --- */
         .theme-sage { background: #f8faf9; color: #064e3b; border: 8px solid #ecfdf5; box-sizing: border-box; }
         .theme-sage .doc-border { border-color: #059669; }
         .theme-sage .doc-accent-bg { background-color: transparent; border-bottom: 2px solid #10b981; color: #064e3b; padding-left: 0; }
         .theme-sage .doc-accent-text { color: #064e3b; }
         .theme-sage .doc-subtext { color: #059669; }
         .theme-sage .doc-gold-text { color: #047857; }
+        .theme-sage .font-display-title { font-family: 'Cormorant Garamond', serif; text-transform: uppercase; letter-spacing: 0.15em; }
 
-        /* Theme 3: Minimalist Pearl */
+        /* --- 3. Minimal Pearl (Modern) --- */
         .theme-pearl { background: #ffffff; color: #0f172a; border-top: 15px solid #0f172a; }
-        .theme-pearl .doc-border { border-color: #cbd5e1; }
-        .theme-pearl .doc-accent-bg { background-color: #f1f5f9; color: #0f172a; border-left: 4px solid #0f172a; border-radius: 0; }
+        .theme-pearl .doc-border { border-color: #e2e8f0; }
+        .theme-pearl .doc-accent-bg { background-color: #f8fafc; color: #0f172a; border-left: 4px solid #0f172a; border-radius: 0; }
         .theme-pearl .doc-accent-text { color: #0f172a; letter-spacing: 2px; }
-        .theme-pearl .doc-subtext { color: #475569; }
+        .theme-pearl .doc-subtext { color: #64748b; }
         .theme-pearl .doc-gold-text { color: #334155; }
+        .theme-pearl .font-display-title { font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.4em; font-weight: 300; }
+
+        /* --- 4. Midnight Sapphire (Luxury) --- */
+        .theme-sapphire { background: #f4f6f9; color: #0f172a; border: 4px double #1e3a8a; box-sizing: border-box; }
+        .theme-sapphire .doc-border { border-color: #1e3a8a; }
+        .theme-sapphire .doc-accent-bg { background-color: #1e3a8a; color: #f8fafc; border-radius: 0px; }
+        .theme-sapphire .doc-accent-text { color: #1e3a8a; }
+        .theme-sapphire .doc-subtext { color: #475569; }
+        .theme-sapphire .doc-gold-text { color: #d97706; }
+        .theme-sapphire .font-display-title { font-family: 'Cinzel', serif; text-transform: uppercase; letter-spacing: 0.25em; }
+
+        /* --- 5. Crimson Marigold (Traditional Indian) --- */
+        .theme-marigold { background: #fffdf7; color: #450a0a; border: 12px solid #7f1d1d; box-sizing: border-box; padding: 10px; }
+        .theme-marigold::before { content: ""; position: absolute; inset: 4px; border: 2px solid #ea580c; pointer-events: none; }
+        .theme-marigold .doc-border { border-color: #dc2626; border-style: dashed; }
+        .theme-marigold .doc-accent-bg { background-color: #7f1d1d; color: #fef3c7; border-radius: 8px; border: 1px solid #ea580c; }
+        .theme-marigold .doc-accent-text { color: #7f1d1d; }
+        .theme-marigold .doc-subtext { color: #9a3412; }
+        .theme-marigold .doc-gold-text { color: #ea580c; }
+        .theme-marigold .font-display-title { font-family: 'Playfair Display', serif; text-transform: uppercase; letter-spacing: 0.1em; }
 
         /* Table structural styling inside document */
-        .biodata-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .biodata-table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
         .biodata-label { width: 32%; font-weight: 600; font-family: 'Montserrat', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; vertical-align: top; padding-top: 2px; }
         .biodata-colon { width: 3%; vertical-align: top; padding-top: 2px; }
-        .biodata-value { width: 65%; font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; vertical-align: top; line-height: 1.4; }
+        .biodata-value { width: 65%; font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; vertical-align: top; line-height: 1.5; }
         
-        .image-mask {
-            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 C 80 0, 100 20, 100 50 C 100 80, 80 100, 50 100 C 20 100, 0 80, 0 50 C 0 20, 20 0, 50 0 Z"/></svg>');
-            mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 C 80 0, 100 20, 100 50 C 100 80, 80 100, 50 100 C 20 100, 0 80, 0 50 C 0 20, 20 0, 50 0 Z"/></svg>');
-            mask-size: cover;
-        }
-
-        /* Animated Background */
+        /* Animated Mesh Background */
         .bg-mesh {
             background-color: #020617;
             background-image: 
@@ -127,37 +141,41 @@
                 radial-gradient(at 100% 0%, rgba(67, 20, 7, 0.8) 0px, transparent 50%);
             background-attachment: fixed;
         }
+
+        /* Tab Transitions */
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 
 <body class="bg-mesh font-sans-ui text-slate-200 h-screen overflow-hidden flex flex-col selection:bg-amber-500/30">
 
     <!-- Top Navigation Bar -->
-    <header class="glass-panel border-b-0 border-white/5 z-50 no-print flex-shrink-0">
-        <div class="max-w-[1920px] mx-auto px-6 py-4 flex items-center justify-between">
+    <header class="bg-slate-900/50 backdrop-blur-xl border-b border-white/10 z-50 no-print flex-shrink-0">
+        <div class="max-w-[1920px] mx-auto px-6 py-3 flex items-center justify-between">
             <div class="flex items-center gap-4">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-300 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-900/20">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-900/20">
                     <i class="ph-fill ph-sketch-logo text-slate-900 text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-serif-heading text-2xl font-bold tracking-wide text-white">Aura <span class="font-light text-amber-200">Studio</span></h1>
-                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Premium Biodata Generator</p>
+                    <h1 class="font-cinzel text-xl font-bold tracking-wide text-white">Aura <span class="font-light text-amber-300">Studio Pro</span></h1>
+                    <p class="text-[9px] text-slate-400 uppercase tracking-widest font-semibold">Premium Biodata Architecture</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
-                <button onclick="downloadWord()" class="group relative px-5 py-2.5 rounded-lg font-medium text-sm text-white overflow-hidden transition-all hover:scale-105">
-                    <div class="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors border border-white/20 rounded-lg"></div>
+                <button onclick="downloadWord()" class="group relative px-5 py-2.5 rounded-lg font-medium text-sm text-slate-300 overflow-hidden transition-all hover:text-white border border-white/10 hover:border-white/30 bg-white/5">
                     <div class="relative flex items-center gap-2">
-                        <i class="ph ph-file-doc text-lg"></i> Export Word
+                        <i class="ph ph-file-doc text-lg text-blue-400"></i> Export Word
                     </div>
                 </button>
-                <button onclick="downloadPDF()" class="group relative px-6 py-2.5 rounded-lg font-medium text-sm text-slate-900 overflow-hidden transition-all hover:scale-105 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
-                    <div class="absolute inset-0 bg-gradient-to-r from-amber-300 to-amber-500 transition-all group-hover:opacity-90"></div>
+                <button onclick="downloadPDF()" class="group relative px-6 py-2.5 rounded-lg font-medium text-sm text-slate-900 overflow-hidden transition-all shadow-[0_0_20px_rgba(251,191,36,0.2)] hover:shadow-[0_0_30px_rgba(251,191,36,0.4)]">
+                    <div class="absolute inset-0 bg-gradient-to-r from-amber-400 to-orange-500 transition-all group-hover:scale-105"></div>
                     <div class="relative flex items-center gap-2">
                         <i id="pdf-icon" class="ph-bold ph-download-simple text-lg"></i>
                         <i id="pdf-spinner" class="ph-bold ph-spinner-gap text-lg animate-spin hidden"></i>
-                        <span id="pdf-text">Render High-Res PDF</span>
+                        <span id="pdf-text">Download High-Res PDF</span>
                     </div>
                 </button>
             </div>
@@ -167,152 +185,180 @@
     <main class="flex-1 flex overflow-hidden max-w-[1920px] mx-auto w-full">
         
         <!-- LEFT PANEL: Editor (Form) -->
-        <aside class="w-full lg:w-[480px] h-full flex flex-col no-print border-r border-white/5 bg-slate-900/40 backdrop-blur-md relative z-10">
+        <aside class="w-full lg:w-[480px] h-full flex flex-col no-print glass-panel relative z-10">
             
-            <div class="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
-                
-                <!-- Section: Design & Aesthetics -->
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3 border-b border-white/10 pb-2">
-                        <div class="w-6 h-6 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center"><i class="ph-fill ph-palette"></i></div>
-                        <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-300">Design Aesthetic</h2>
-                    </div>
-                    
-                    <div class="grid grid-cols-3 gap-3">
-                        <button onclick="changeTheme('royal')" id="btn-theme-royal" class="theme-btn relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-amber-400 transition-all hover:scale-[1.02]">
-                            <div class="absolute inset-0 bg-gradient-to-br from-[#831843] to-[#4c1d95]"></div>
-                            <div class="absolute inset-x-0 bottom-0 bg-black/50 backdrop-blur-sm py-1.5 text-[10px] font-bold tracking-wider text-amber-200">ROYAL VELVET</div>
-                        </button>
-                        <button onclick="changeTheme('sage')" id="btn-theme-sage" class="theme-btn relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 transition-all hover:scale-[1.02] opacity-70 hover:opacity-100">
-                            <div class="absolute inset-0 bg-gradient-to-br from-[#064e3b] to-[#047857]"></div>
-                            <div class="absolute inset-x-0 bottom-0 bg-black/50 backdrop-blur-sm py-1.5 text-[10px] font-bold tracking-wider text-emerald-200">ENCHANTED SAGE</div>
-                        </button>
-                        <button onclick="changeTheme('pearl')" id="btn-theme-pearl" class="theme-btn relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 transition-all hover:scale-[1.02] opacity-70 hover:opacity-100">
-                            <div class="absolute inset-0 bg-gradient-to-br from-[#f8fafc] to-[#cbd5e1]"></div>
-                            <div class="absolute inset-x-0 bottom-0 bg-black/50 backdrop-blur-sm py-1.5 text-[10px] font-bold tracking-wider text-slate-300">MINIMAL PEARL</div>
-                        </button>
-                    </div>
+            <!-- Tab Navigation -->
+            <div class="flex p-4 border-b border-white/10 gap-2 overflow-x-auto">
+                <button onclick="switchTab('tab-design')" id="btn-tab-design" class="tab-btn flex-1 py-2 px-3 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all">
+                    <i class="ph-fill ph-paint-brush"></i> Design
+                </button>
+                <button onclick="switchTab('tab-personal')" id="btn-tab-personal" class="tab-btn flex-1 py-2 px-3 rounded-lg text-slate-400 hover:bg-white/5 hover:text-slate-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all">
+                    <i class="ph-fill ph-user"></i> Profile
+                </button>
+                <button onclick="switchTab('tab-family')" id="btn-tab-family" class="tab-btn flex-1 py-2 px-3 rounded-lg text-slate-400 hover:bg-white/5 hover:text-slate-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all">
+                    <i class="ph-fill ph-users-three"></i> Family
+                </button>
+                <button onclick="switchTab('tab-contact')" id="btn-tab-contact" class="tab-btn flex-1 py-2 px-3 rounded-lg text-slate-400 hover:bg-white/5 hover:text-slate-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all">
+                    <i class="ph-fill ph-address-book"></i> Contact
+                </button>
+            </div>
 
-                    <!-- Photo Upload area inside Design -->
-                    <div class="mt-4 p-4 rounded-xl glass-input relative group border-dashed border-white/20 hover:border-amber-400/50 cursor-pointer transition-colors" onclick="document.getElementById('inp-photo').click()">
-                        <input type="file" id="inp-photo" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-slate-400 group-hover:text-amber-400 group-hover:scale-110 transition-all overflow-hidden" id="photo-preview-ui">
-                                <i class="ph ph-camera text-xl"></i>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="text-xs font-semibold text-white">Upload Portrait</h3>
-                                <p class="text-[10px] text-slate-400 mt-0.5">High-res square or portrait recommended.</p>
-                            </div>
-                            <button id="btn-remove-photo" onclick="removePhoto(event)" class="hidden w-8 h-8 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 flex items-center justify-center transition-colors">
-                                <i class="ph ph-trash text-sm"></i>
+            <div class="flex-1 overflow-y-auto p-6 pb-32">
+                
+                <!-- TAB 1: DESIGN -->
+                <div id="tab-design" class="tab-content active space-y-6">
+                    <div>
+                        <h3 class="text-xs font-semibold tracking-widest uppercase text-amber-500 mb-3 flex items-center gap-2"><i class="ph-fill ph-swatches"></i> Premium Templates</h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- Theme Cards -->
+                            <button onclick="changeTheme('royal')" id="theme-royal" class="theme-selector relative aspect-[16/10] rounded-xl overflow-hidden border-2 border-amber-400 transition-all hover:scale-[1.02]">
+                                <div class="absolute inset-0 bg-gradient-to-br from-[#831843] to-[#4c1d95]"></div>
+                                <div class="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-md p-2 text-left">
+                                    <div class="text-[10px] font-bold tracking-wider text-amber-200">Royal Velvet</div>
+                                    <div class="text-[8px] text-slate-300">Burgundy & Gold Heritage</div>
+                                </div>
+                            </button>
+                            <button onclick="changeTheme('sapphire')" id="theme-sapphire" class="theme-selector relative aspect-[16/10] rounded-xl overflow-hidden border border-white/10 transition-all hover:scale-[1.02] opacity-70 hover:opacity-100">
+                                <div class="absolute inset-0 bg-gradient-to-br from-[#0f172a] to-[#1e3a8a]"></div>
+                                <div class="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-md p-2 text-left">
+                                    <div class="text-[10px] font-bold tracking-wider text-blue-300">Midnight Sapphire</div>
+                                    <div class="text-[8px] text-slate-300">Deep Navy Luxury</div>
+                                </div>
+                            </button>
+                            <button onclick="changeTheme('sage')" id="theme-sage" class="theme-selector relative aspect-[16/10] rounded-xl overflow-hidden border border-white/10 transition-all hover:scale-[1.02] opacity-70 hover:opacity-100">
+                                <div class="absolute inset-0 bg-gradient-to-br from-[#064e3b] to-[#047857]"></div>
+                                <div class="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-md p-2 text-left">
+                                    <div class="text-[10px] font-bold tracking-wider text-emerald-200">Enchanted Sage</div>
+                                    <div class="text-[8px] text-slate-300">Soft Botanical Green</div>
+                                </div>
+                            </button>
+                            <button onclick="changeTheme('marigold')" id="theme-marigold" class="theme-selector relative aspect-[16/10] rounded-xl overflow-hidden border border-white/10 transition-all hover:scale-[1.02] opacity-70 hover:opacity-100">
+                                <div class="absolute inset-0 bg-gradient-to-br from-[#991b1b] to-[#ea580c]"></div>
+                                <div class="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-md p-2 text-left">
+                                    <div class="text-[10px] font-bold tracking-wider text-orange-200">Crimson Marigold</div>
+                                    <div class="text-[8px] text-slate-300">Traditional Indian Motif</div>
+                                </div>
+                            </button>
+                            <button onclick="changeTheme('pearl')" id="theme-pearl" class="theme-selector col-span-2 relative h-16 rounded-xl overflow-hidden border border-white/10 transition-all hover:scale-[1.02] opacity-70 hover:opacity-100">
+                                <div class="absolute inset-0 bg-gradient-to-r from-[#f8fafc] to-[#cbd5e1]"></div>
+                                <div class="absolute inset-0 flex items-center px-4 justify-between">
+                                    <div class="text-left">
+                                        <div class="text-[11px] font-bold tracking-wider text-slate-800">Minimal Pearl</div>
+                                        <div class="text-[9px] text-slate-600">Ultra-modern Editorial</div>
+                                    </div>
+                                    <i class="ph-bold ph-pen-nib text-slate-800 text-xl"></i>
+                                </div>
                             </button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Section: Personal Details -->
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3 border-b border-white/10 pb-2">
-                        <div class="w-6 h-6 rounded bg-blue-500/20 text-blue-400 flex items-center justify-center"><i class="ph-fill ph-user"></i></div>
-                        <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-300">Personal Data</h2>
-                    </div>
-
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Full Name</label>
-                            <input type="text" id="inp-name" oninput="sync()" value="Vrajrajsinh Mukeshkumar Gohil" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Date of Birth</label>
-                                <input type="text" id="inp-dob" oninput="sync()" value="06/11/1998" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                    <div class="border-t border-white/10 pt-6">
+                        <h3 class="text-xs font-semibold tracking-widest uppercase text-amber-500 mb-3 flex items-center gap-2"><i class="ph-fill ph-camera"></i> Profile Photo</h3>
+                        <div class="p-4 rounded-xl glass-input relative group border-dashed border-white/20 hover:border-amber-400/50 cursor-pointer transition-colors" onclick="document.getElementById('inp-photo').click()">
+                            <input type="file" id="inp-photo" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 group-hover:text-amber-400 group-hover:scale-110 transition-all overflow-hidden" id="photo-preview-ui">
+                                    <i class="ph ph-user-focus text-xl"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-xs font-semibold text-white">Upload Portrait</h3>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Will automatically format into frame.</p>
+                                </div>
+                                <button id="btn-remove-photo" onclick="removePhoto(event)" class="hidden w-8 h-8 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 flex items-center justify-center transition-colors">
+                                    <i class="ph ph-trash text-sm"></i>
+                                </button>
                             </div>
-                            <div>
-                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Place of Birth</label>
-                                <input type="text" id="inp-pob" oninput="sync()" value="Vadodara" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Height</label>
-                                <input type="text" id="inp-height" oninput="sync()" value="5'5&quot;" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Gotra</label>
-                                <input type="text" id="inp-gotra" oninput="sync()" value="Gautam" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Native Place</label>
-                            <input type="text" id="inp-native" oninput="sync()" value="Vadia, Ta: Savli, Dist: Vadodara" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Education</label>
-                            <textarea id="inp-edu" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">B.Tech Information Technology from Parul University</textarea>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Occupation</label>
-                            <textarea id="inp-occ" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">Flutter/Software Developer at DSPL. Pvt. Ltd</textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- Section: Family Background -->
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3 border-b border-white/10 pb-2">
-                        <div class="w-6 h-6 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><i class="ph-fill ph-users-three"></i></div>
-                        <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-300">Family Lineage</h2>
+                <!-- TAB 2: PERSONAL -->
+                <div id="tab-personal" class="tab-content space-y-4">
+                    <h3 class="text-xs font-semibold tracking-widest uppercase text-blue-400 mb-3 border-b border-white/10 pb-2">Primary Attributes</h3>
+                    
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Full Name</label>
+                        <input type="text" id="inp-name" oninput="sync()" value="Vrajrajsinh Mukeshkumar Gohil" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
                     </div>
-
-                    <div class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Father's Name</label>
-                                <input type="text" id="inp-fname" oninput="sync()" value="Mukeshkumar Madhusinh Gohil" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Occupation</label>
-                                <input type="text" id="inp-focc" oninput="sync()" value="Sr. Advocate, Halol Court" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Mother's Name</label>
-                                <input type="text" id="inp-mname" oninput="sync()" value="Bharatiba Mukeshkumar Gohil" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Occupation</label>
-                                <input type="text" id="inp-mocc" oninput="sync()" value="Housewife" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
-                            </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Date of Birth</label>
+                            <input type="text" id="inp-dob" oninput="sync()" value="06/11/1998" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
                         </div>
                         <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Mosad (Maternal Side)</label>
-                            <textarea id="inp-mosad" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">Arvindsinh Amarsinh Sindha (Mama), Dhuvaran, Dist: Kheda. At present: Vadodara</textarea>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Place of Birth</label>
+                            <input type="text" id="inp-pob" oninput="sync()" value="Vadodara" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Height</label>
+                            <input type="text" id="inp-height" oninput="sync()" value="5'5&quot;" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
                         </div>
                         <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Sibling</label>
-                            <textarea id="inp-sib" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">Sister (Elder) - Krupaba Alaukiksinh Chavda (M.Pharm, MSc Public Health) - Currently in UK</textarea>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Gotra</label>
+                            <input type="text" id="inp-gotra" oninput="sync()" value="Gautam" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
                         </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Education</label>
+                        <textarea id="inp-edu" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">B.Tech Information Technology from Parul University</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Occupation</label>
+                        <textarea id="inp-occ" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">Flutter/Software Developer at DSPL. Pvt. Ltd</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Native Place</label>
+                        <input type="text" id="inp-native" oninput="sync()" value="Vadia, Ta: Savli, Dist: Vadodara" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
                     </div>
                 </div>
 
-                <!-- Section: Contact Details -->
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3 border-b border-white/10 pb-2">
-                        <div class="w-6 h-6 rounded bg-purple-500/20 text-purple-400 flex items-center justify-center"><i class="ph-fill ph-map-pin"></i></div>
-                        <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-300">Contact</h2>
-                    </div>
+                <!-- TAB 3: FAMILY -->
+                <div id="tab-family" class="tab-content space-y-4">
+                    <h3 class="text-xs font-semibold tracking-widest uppercase text-emerald-400 mb-3 border-b border-white/10 pb-2">Lineage & Family</h3>
 
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Contact No.</label>
-                            <input type="text" id="inp-phone" oninput="sync()" value="+91-9638027766" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="col-span-2">
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Father's Name</label>
+                            <input type="text" id="inp-fname" oninput="sync()" value="Mukeshkumar Madhusinh Gohil" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
                         </div>
-                        <div>
-                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Address</label>
-                            <textarea id="inp-addr" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">150, Madhuvan Park Society, Kanjari Road, Halol, Dist: Panchmahals</textarea>
+                        <div class="col-span-2">
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Father's Occupation</label>
+                            <input type="text" id="inp-focc" oninput="sync()" value="Sr. Advocate, Halol Court" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
                         </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 mt-4">
+                        <div class="col-span-2">
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Mother's Name</label>
+                            <input type="text" id="inp-mname" oninput="sync()" value="Bharatiba Mukeshkumar Gohil" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Mother's Occupation</label>
+                            <input type="text" id="inp-mocc" oninput="sync()" value="Housewife" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Mosad (Maternal Side)</label>
+                        <textarea id="inp-mosad" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">Arvindsinh Amarsinh Sindha (Mama), Dhuvaran, Dist: Kheda. At present: Vadodara</textarea>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Siblings</label>
+                        <textarea id="inp-sib" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">Sister (Elder) - Krupaba Alaukiksinh Chavda (M.Pharm, MSc Public Health) - Currently in UK</textarea>
+                    </div>
+                </div>
+
+                <!-- TAB 4: CONTACT -->
+                <div id="tab-contact" class="tab-content space-y-4">
+                    <h3 class="text-xs font-semibold tracking-widest uppercase text-purple-400 mb-3 border-b border-white/10 pb-2">Contact & Address</h3>
+
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Primary Contact No.</label>
+                        <input type="text" id="inp-phone" oninput="sync()" value="+91-9638027766" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm font-bold tracking-wider">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Residential Address</label>
+                        <textarea id="inp-addr" oninput="sync()" rows="3" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">150, Madhuvan Park Society, Kanjari Road, Halol, Dist: Panchmahals</textarea>
                     </div>
                 </div>
 
@@ -321,45 +367,46 @@
 
         <!-- RIGHT PANEL: Live Preview -->
         <section class="flex-1 overflow-y-auto pt-10 pb-20 px-4 relative">
-            <div class="preview-wrapper w-full h-full">
+            <div class="preview-wrapper w-full h-full" id="preview-wrapper-id">
                 
                 <!-- THE A4 CANVAS -->
                 <div id="biodata-document" class="a4-document theme-royal px-[18mm] py-[22mm] flex flex-col">
                     
-                    <!-- Decorative Corners (SVG) -->
-                    <svg class="absolute top-0 left-0 w-32 h-32 doc-accent-text opacity-20 pointer-events-none" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
-                    <svg class="absolute top-0 right-0 w-32 h-32 doc-accent-text opacity-20 pointer-events-none transform rotate-90" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
-                    <svg class="absolute bottom-0 left-0 w-32 h-32 doc-accent-text opacity-20 pointer-events-none transform -rotate-90" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
-                    <svg class="absolute bottom-0 right-0 w-32 h-32 doc-accent-text opacity-20 pointer-events-none transform rotate-180" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+                    <!-- Decorative Corners (SVG) - adapts colors to theme -->
+                    <svg class="absolute top-0 left-0 w-32 h-32 doc-accent-text opacity-30 pointer-events-none" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="2.5" fill="currentColor"/></svg>
+                    <svg class="absolute top-0 right-0 w-32 h-32 doc-accent-text opacity-30 pointer-events-none transform rotate-90" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="2.5" fill="currentColor"/></svg>
+                    <svg class="absolute bottom-0 left-0 w-32 h-32 doc-accent-text opacity-30 pointer-events-none transform -rotate-90" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="2.5" fill="currentColor"/></svg>
+                    <svg class="absolute bottom-0 right-0 w-32 h-32 doc-accent-text opacity-30 pointer-events-none transform rotate-180" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="2.5" fill="currentColor"/></svg>
 
-                    <!-- Watermark -->
+                    <!-- Large Watermark Symbol -->
                     <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
-                        <svg class="w-[400px] h-[400px] doc-accent-text" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2h2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 1.83-.62 3.51-1.66 4.85z"/></svg>
+                        <svg class="w-[450px] h-[450px] doc-accent-text" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2h2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 1.83-.62 3.51-1.66 4.85z"/></svg>
                     </div>
 
-                    <!-- Header -->
+                    <!-- Main Header Area -->
                     <div class="text-center mb-10 relative z-10">
                         <div class="inline-flex flex-col items-center">
-                            <h1 class="font-serif-heading text-5xl font-bold uppercase tracking-[0.25em] doc-accent-text mb-2">Bio-Data</h1>
-                            <div class="w-full h-px bg-current doc-subtext opacity-30 my-1"></div>
-                            <p class="font-script text-3xl doc-gold-text capitalize mt-2">Shree Ganesha Namah</p>
+                            <!-- Theme specific font applied here -->
+                            <h1 class="font-display-title text-[42px] font-bold doc-accent-text mb-1 leading-none">Bio-Data</h1>
+                            <div class="w-full h-px bg-current doc-subtext opacity-30 my-2"></div>
+                            <p class="font-script text-3xl doc-gold-text capitalize mt-1">Shree Ganesha Namah</p>
                         </div>
                     </div>
 
-                    <!-- MAIN CONTENT WRAPPER -->
+                    <!-- Main Body Layout -->
                     <div class="flex-1 flex flex-col gap-8 relative z-10">
                         
-                        <!-- Top Row: Personal Details & Photo -->
-                        <div class="flex gap-6 items-start">
+                        <!-- Row 1: Personal Details -->
+                        <div class="flex gap-8 items-start">
                             
                             <div class="flex-1">
-                                <div class="mb-4 pb-2 border-b doc-border relative">
-                                    <h2 class="font-serif-heading text-xl font-bold uppercase tracking-widest doc-accent-text">Personal Details</h2>
+                                <div class="mb-4 pb-1 border-b doc-border relative">
+                                    <h2 class="font-serif-heading text-[17px] font-bold uppercase tracking-[0.15em] doc-accent-text">Personal Profile</h2>
                                 </div>
                                 
                                 <table class="biodata-table">
                                     <tbody>
-                                        <tr><td class="biodata-label doc-subtext">Name</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-name"></td></tr>
+                                        <tr><td class="biodata-label doc-subtext">Name</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value text-[18px] font-bold" id="out-name"></td></tr>
                                         <tr><td class="biodata-label doc-subtext">Date of Birth</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-dob"></td></tr>
                                         <tr><td class="biodata-label doc-subtext">Place of Birth</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-pob"></td></tr>
                                         <tr><td class="biodata-label doc-subtext">Height</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-height"></td></tr>
@@ -372,24 +419,24 @@
                             </div>
 
                             <!-- Floating Photo Frame -->
-                            <div id="photo-container" class="hidden w-[38mm] h-[48mm] shrink-0 border-4 doc-border p-1 bg-white shadow-xl relative z-10 rounded-sm transform rotate-2">
-                                <img id="out-photo" src="" alt="Profile" class="w-full h-full object-cover rounded-sm filter contrast-105">
+                            <div id="photo-container" class="hidden w-[42mm] h-[55mm] shrink-0 border-[6px] doc-border p-1 bg-white shadow-2xl relative z-10 rounded-sm transform rotate-2">
+                                <img id="out-photo" src="" alt="Profile" class="w-full h-full object-cover rounded-sm filter contrast-[1.05]">
                                 <!-- Tape effect -->
-                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-3 bg-white/60 backdrop-blur-sm -rotate-3 border border-black/5 shadow-sm"></div>
+                                <div class="absolute -top-4 left-1/2 -translate-x-1/2 w-12 h-4 bg-white/70 backdrop-blur-md -rotate-2 border border-black/5 shadow-sm"></div>
                             </div>
                         </div>
 
-                        <!-- Middle Row: Family Background -->
+                        <!-- Row 2: Family Details -->
                         <div>
-                            <div class="mb-4 pb-2 border-b doc-border relative">
-                                <h2 class="font-serif-heading text-xl font-bold uppercase tracking-widest doc-accent-text">Family Background</h2>
+                            <div class="mb-4 pb-1 border-b doc-border relative">
+                                <h2 class="font-serif-heading text-[17px] font-bold uppercase tracking-[0.15em] doc-accent-text">Family Heritage</h2>
                             </div>
                             
                             <table class="biodata-table">
                                 <tbody>
-                                    <tr><td class="biodata-label doc-subtext w-[25%]">Father's Name</td><td class="biodata-colon doc-subtext w-[3%]">:</td><td class="biodata-value w-[72%]" id="out-fname"></td></tr>
+                                    <tr><td class="biodata-label doc-subtext w-[25%]">Father's Name</td><td class="biodata-colon doc-subtext w-[3%]">:</td><td class="biodata-value w-[72%] text-[17px] font-bold" id="out-fname"></td></tr>
                                     <tr><td class="biodata-label doc-subtext">Occupation</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-focc"></td></tr>
-                                    <tr><td class="biodata-label doc-subtext">Mother's Name</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-mname"></td></tr>
+                                    <tr><td class="biodata-label doc-subtext">Mother's Name</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value text-[17px] font-bold" id="out-mname"></td></tr>
                                     <tr><td class="biodata-label doc-subtext">Occupation</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-mocc"></td></tr>
                                     <tr><td class="biodata-label doc-subtext">Mosad</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value whitespace-pre-line" id="out-mosad"></td></tr>
                                     <tr><td class="biodata-label doc-subtext">Sibling</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value whitespace-pre-line" id="out-sib"></td></tr>
@@ -397,21 +444,21 @@
                             </table>
                         </div>
 
-                        <!-- Bottom Row: Contact -->
+                        <!-- Row 3: Contact Bottom Block -->
                         <div class="mt-auto pt-6">
-                            <div class="doc-accent-bg p-5 rounded-sm relative overflow-hidden">
+                            <div class="doc-accent-bg p-6 relative overflow-hidden shadow-lg">
                                 <!-- Subtle bg pattern in contact box -->
                                 <svg class="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="100" x2="100" y2="0" stroke="currentColor" stroke-width="0.5"/><line x1="0" y1="90" x2="100" y2="-10" stroke="currentColor" stroke-width="0.5"/><line x1="0" y1="80" x2="100" y2="-20" stroke="currentColor" stroke-width="0.5"/></svg>
                                 
                                 <div class="relative z-10 flex gap-6 items-center">
                                     <div class="flex-1">
-                                        <div class="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-1">Residential Address</div>
-                                        <div class="font-serif-doc text-[15px] font-semibold leading-snug" id="out-addr"></div>
+                                        <div class="text-[9px] uppercase tracking-[0.2em] font-bold opacity-80 mb-1">Residential Address</div>
+                                        <div class="font-serif-doc text-[16px] font-semibold leading-snug" id="out-addr"></div>
                                     </div>
-                                    <div class="w-px h-10 bg-current opacity-20"></div>
+                                    <div class="w-px h-12 bg-current opacity-20"></div>
                                     <div class="shrink-0 text-right">
-                                        <div class="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-1">Contact Number</div>
-                                        <div class="font-sans-ui text-[18px] tracking-wider font-bold" id="out-phone"></div>
+                                        <div class="text-[9px] uppercase tracking-[0.2em] font-bold opacity-80 mb-1">Contact Number</div>
+                                        <div class="font-sans-ui text-[20px] tracking-wider font-bold" id="out-phone"></div>
                                     </div>
                                 </div>
                             </div>
@@ -428,7 +475,7 @@
         let currentThemeState = 'royal';
         let uploadedPhotoBase64 = ''; 
 
-        // 1. Sync Live Data
+        // 1. Live Data Sync
         function sync() {
             const fields = ['name', 'dob', 'pob', 'height', 'gotra', 'edu', 'occ', 'native', 'fname', 'focc', 'mname', 'mocc', 'mosad', 'sib', 'addr', 'phone'];
             fields.forEach(field => {
@@ -440,29 +487,45 @@
             });
         }
 
-        // 2. Theme Switching Logic
+        // 2. Tab Switching Logic
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Reset all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn flex-1 py-2 px-3 rounded-lg text-slate-400 hover:bg-white/5 hover:text-slate-200 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all";
+            });
+
+            // Show selected content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight active button
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.className = "tab-btn flex-1 py-2 px-3 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all";
+        }
+
+        // 3. Theme Switching Logic
         function changeTheme(theme) {
             currentThemeState = theme;
             
             // Update Document Classes
             const doc = document.getElementById('biodata-document');
-            doc.classList.remove('theme-royal', 'theme-sage', 'theme-pearl');
-            doc.classList.add('theme-' + theme);
+            doc.className = `a4-document theme-${theme} px-[18mm] py-[22mm] flex flex-col`; // resets & applies new
 
             // Update UI Button states
-            document.querySelectorAll('.theme-btn').forEach(btn => {
+            document.querySelectorAll('.theme-selector').forEach(btn => {
                 btn.classList.remove('border-amber-400', 'border-2');
                 btn.classList.add('border-white/10', 'border', 'opacity-70');
             });
 
-            const activeBtn = document.getElementById('btn-theme-' + theme);
+            const activeBtn = document.getElementById('theme-' + theme);
             if(activeBtn) {
                 activeBtn.classList.remove('border-white/10', 'border', 'opacity-70');
                 activeBtn.classList.add('border-amber-400', 'border-2');
             }
         }
 
-        // 3. Image Upload Logic
+        // 4. Image Upload Logic
         function handlePhotoUpload(event) {
             const file = event.target.files[0];
             if (file) {
@@ -470,11 +533,11 @@
                 reader.onload = function(e) {
                     uploadedPhotoBase64 = e.target.result;
                     
-                    // Update Document Output
+                    // Show on doc
                     document.getElementById('out-photo').src = uploadedPhotoBase64;
                     document.getElementById('photo-container').classList.remove('hidden');
                     
-                    // Update Editor UI
+                    // Show in UI
                     const previewUI = document.getElementById('photo-preview-ui');
                     previewUI.innerHTML = `<img src="${uploadedPhotoBase64}" class="w-full h-full object-cover">`;
                     document.getElementById('btn-remove-photo').classList.remove('hidden');
@@ -484,66 +547,85 @@
         }
 
         function removePhoto(event) {
-            event.stopPropagation(); // Prevent triggering the upload click
+            event.stopPropagation();
             uploadedPhotoBase64 = '';
             document.getElementById('inp-photo').value = '';
             
-            // Revert Document Output
             document.getElementById('out-photo').src = '';
             document.getElementById('photo-container').classList.add('hidden');
             
-            // Revert Editor UI
             const previewUI = document.getElementById('photo-preview-ui');
-            previewUI.innerHTML = `<i class="ph ph-camera text-xl"></i>`;
+            previewUI.innerHTML = `<i class="ph ph-user-focus text-xl"></i>`;
             document.getElementById('btn-remove-photo').classList.add('hidden');
         }
 
-        // 4. High-Fidelity PDF Engine (html2pdf)
+        // 5. PDF Engine (Upgraded for perfect A4 scaling)
         async function downloadPDF() {
-            const element = document.getElementById('biodata-document');
+            const sourceElement = document.getElementById('biodata-document');
             const name = document.getElementById('inp-name').value || 'Biodata';
-            const filename = `Aura_Biodata_${name.replace(/\s+/g, '_')}.pdf`;
+            const filename = `Aura_${currentThemeState}_${name.replace(/\s+/g, '_')}.pdf`;
             
-            // Loading State
-            document.getElementById('pdf-text').innerText = "Rendering Engine...";
+            document.getElementById('pdf-text').innerText = "Compiling PDF...";
             document.getElementById('pdf-spinner').classList.remove('hidden');
             document.getElementById('pdf-icon').classList.add('hidden');
 
-            // Force scale up right before render to ensure sharp text
-            const originalTransform = element.style.transform;
-            element.style.transform = "scale(1)"; 
+            // CRITICAL FIX: Create a pristine clone of the document.
+            // This prevents the screen's zoom/transform scaling from breaking the PDF layout.
+            const clone = sourceElement.cloneNode(true);
+            document.body.appendChild(clone);
+            
+            // Force exact A4 dimensions in pixels (96 DPI standard) on the clone
+            clone.style.transform = 'none';
+            clone.style.width = '794px';
+            clone.style.height = '1123px';
+            clone.style.position = 'fixed'; // Hide it from normal flow
+            clone.style.top = '0';
+            clone.style.left = '-9999px'; // Move it completely off-screen
+            clone.style.zIndex = '-1';
+            clone.style.boxShadow = 'none';
+            clone.style.margin = '0';
 
             const opt = {
                 margin:       0,
                 filename:     filename,
-                image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { scale: 3, useCORS: true, letterRendering: true, windowWidth: element.scrollWidth, windowHeight: element.scrollHeight },
+                image:        { type: 'jpeg', quality: 1.0 },
+                html2canvas:  { 
+                    scale: 3, // Ultra-High resolution
+                    useCORS: true, 
+                    letterRendering: true, 
+                    scrollY: 0, 
+                    scrollX: 0,
+                    width: 794,
+                    height: 1123
+                },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             try {
-                await html2pdf().set(opt).from(element).save();
+                await html2pdf().set(opt).from(clone).save();
             } catch (err) {
                 console.error("PDF generation error: ", err);
-                alert("An error occurred generating the PDF. Please try again.");
+                alert("Failed to generate PDF. You can also try 'Print' -> 'Save as PDF'.");
+            } finally {
+                // Clean up the clone immediately after generation
+                document.body.removeChild(clone);
+                document.getElementById('pdf-text').innerText = "Download High-Res PDF";
+                document.getElementById('pdf-spinner').classList.add('hidden');
+                document.getElementById('pdf-icon').classList.remove('hidden');
             }
-
-            // Revert State
-            element.style.transform = originalTransform;
-            document.getElementById('pdf-text').innerText = "Render High-Res PDF";
-            document.getElementById('pdf-spinner').classList.add('hidden');
-            document.getElementById('pdf-icon').classList.remove('hidden');
         }
 
-        // 5. Native MS Word HTML Compiler Engine
+        // 6. Native MS Word HTML Compiler Engine
         function downloadWord() {
             const name = document.getElementById('inp-name').value || 'Biodata';
             
-            // Map themes to Word-friendly hex colors
+            // Map themes to Word-friendly hex colors dynamically based on selection
             const themeColors = {
-                'royal': { border: '#831843', title: '#831843', gold: '#b45309', bg: '#fdfbf7' },
-                'sage':  { border: '#059669', title: '#064e3b', gold: '#047857', bg: '#f8faf9' },
-                'pearl': { border: '#cbd5e1', title: '#0f172a', gold: '#334155', bg: '#ffffff' }
+                'royal': { border: '#831843', title: '#831843', gold: '#b45309', bg: '#fdfbf7', boxBg: '#831843', boxTxt: '#ffffff' },
+                'sage':  { border: '#059669', title: '#064e3b', gold: '#047857', bg: '#f8faf9', boxBg: '#ecfdf5', boxTxt: '#064e3b' },
+                'pearl': { border: '#e2e8f0', title: '#0f172a', gold: '#334155', bg: '#ffffff', boxBg: '#f8fafc', boxTxt: '#0f172a' },
+                'sapphire': { border: '#1e3a8a', title: '#0f172a', gold: '#d97706', bg: '#f4f6f9', boxBg: '#1e3a8a', boxTxt: '#ffffff' },
+                'marigold': { border: '#dc2626', title: '#7f1d1d', gold: '#ea580c', bg: '#fffdf7', boxBg: '#7f1d1d', boxTxt: '#fef3c7' }
             };
             const c = themeColors[currentThemeState];
 
@@ -554,19 +636,18 @@
                 <title>Biodata</title>
                 <style>
                     body { font-family: 'Georgia', serif; font-size: 11pt; color: #1e293b; background-color: ${c.bg}; }
-                    .header-box { text-align: center; margin-bottom: 30px; }
+                    .header-box { text-align: center; margin-bottom: 25px; }
                     h1 { color: ${c.title}; font-size: 28pt; letter-spacing: 4px; margin-bottom: 5px; text-transform: uppercase; }
-                    .subtitle { color: ${c.gold}; font-size: 16pt; font-style: italic; font-family: 'Palatino Linotype', serif; }
-                    h2 { color: ${c.title}; font-size: 14pt; border-bottom: 1px solid ${c.border}; padding-bottom: 5px; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px; }
+                    .subtitle { color: ${c.gold}; font-size: 16pt; font-style: italic; }
+                    h2 { color: ${c.title}; font-size: 14pt; border-bottom: 1px solid ${c.border}; padding-bottom: 4px; margin-top: 20px; text-transform: uppercase; }
                     table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
                     td { padding: 6px 4px; vertical-align: top; line-height: 1.4; }
                     .label { font-weight: bold; width: 30%; color: #475569; font-size: 10pt; text-transform: uppercase; }
                     .colon { width: 5%; text-align: center; color: #94a3b8; }
                     .val { font-size: 12pt; font-weight: bold; color: #0f172a; }
                     .photo-td { width: 140px; text-align: right; vertical-align: top; }
-                    .photo-img { width: 120px; height: 150px; border: 3px solid ${c.border}; padding: 3px; }
-                    .contact-box { background-color: ${c.border}; padding: 15px; margin-top: 30px; }
-                    .contact-text { color: #ffffff; }
+                    .photo-img { width: 130px; height: 160px; border: 4px solid ${c.border}; padding: 3px; }
+                    .contact-box { background-color: ${c.boxBg}; color: ${c.boxTxt}; padding: 15px; margin-top: 30px; }
                 </style>
             </head>
             <body>
@@ -575,12 +656,12 @@
                     <div class="subtitle">Shree Ganesha Namah</div>
                 </div>
                 
-                <h2>PERSONAL DETAILS</h2>
+                <h2>PERSONAL PROFILE</h2>
                 <table style="width: 100%; border: none;">
                     <tr>
                         <td style="padding: 0; vertical-align: top;">
                             <table style="width: 100%;">
-                                <tr><td class="label">Name</td><td class="colon">:</td><td class="val">${document.getElementById('inp-name').value}</td></tr>
+                                <tr><td class="label">Name</td><td class="colon">:</td><td class="val" style="font-size:14pt;">${document.getElementById('inp-name').value}</td></tr>
                                 <tr><td class="label">Date of Birth</td><td class="colon">:</td><td class="val">${document.getElementById('inp-dob').value}</td></tr>
                                 <tr><td class="label">Place of Birth</td><td class="colon">:</td><td class="val">${document.getElementById('inp-pob').value}</td></tr>
                                 <tr><td class="label">Height</td><td class="colon">:</td><td class="val">${document.getElementById('inp-height').value}</td></tr>
@@ -598,26 +679,26 @@
                     </tr>
                 </table>
 
-                <h2>FAMILY BACKGROUND</h2>
+                <h2>FAMILY HERITAGE</h2>
                 <table>
-                    <tr><td class="label">Father's Name</td><td class="colon">:</td><td class="val">${document.getElementById('inp-fname').value}</td></tr>
+                    <tr><td class="label">Father's Name</td><td class="colon">:</td><td class="val" style="font-size:13pt;">${document.getElementById('inp-fname').value}</td></tr>
                     <tr><td class="label">Occupation</td><td class="colon">:</td><td class="val">${document.getElementById('inp-focc').value}</td></tr>
-                    <tr><td class="label">Mother's Name</td><td class="colon">:</td><td class="val">${document.getElementById('inp-mname').value}</td></tr>
+                    <tr><td class="label">Mother's Name</td><td class="colon">:</td><td class="val" style="font-size:13pt;">${document.getElementById('inp-mname').value}</td></tr>
                     <tr><td class="label">Occupation</td><td class="colon">:</td><td class="val">${document.getElementById('inp-mocc').value}</td></tr>
                     <tr><td class="label">Mosad</td><td class="colon">:</td><td class="val">${document.getElementById('inp-mosad').value.replace(/\n/g, '<br>')}</td></tr>
                     <tr><td class="label">Sibling</td><td class="colon">:</td><td class="val">${document.getElementById('inp-sib').value.replace(/\n/g, '<br>')}</td></tr>
                 </table>
 
                 <div class="contact-box">
-                    <table style="color: white; margin: 0;">
+                    <table style="color: ${c.boxTxt}; margin: 0; width: 100%;">
                         <tr>
-                            <td style="width: 60%;">
-                                <div style="font-size: 9pt; text-transform: uppercase; opacity: 0.8;">Residential Address</div>
+                            <td style="width: 60%; vertical-align: middle;">
+                                <div style="font-size: 8pt; text-transform: uppercase; opacity: 0.9; margin-bottom: 4px;">Residential Address</div>
                                 <div style="font-size: 11pt; font-weight: bold;">${document.getElementById('inp-addr').value.replace(/\n/g, '<br>')}</div>
                             </td>
-                            <td style="width: 40%; text-align: right; border-left: 1px solid rgba(255,255,255,0.3);">
-                                <div style="font-size: 9pt; text-transform: uppercase; opacity: 0.8;">Contact Number</div>
-                                <div style="font-size: 14pt; font-weight: bold;">${document.getElementById('inp-phone').value}</div>
+                            <td style="width: 40%; text-align: right; vertical-align: middle; border-left: 1px solid rgba(255,255,255,0.2);">
+                                <div style="font-size: 8pt; text-transform: uppercase; opacity: 0.9; margin-bottom: 4px;">Contact Number</div>
+                                <div style="font-size: 15pt; font-weight: bold;">${document.getElementById('inp-phone').value}</div>
                             </td>
                         </tr>
                     </table>
@@ -629,30 +710,30 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `Aura_Biodata_${name.replace(/\s+/g, '_')}.doc`;
+            link.download = `Aura_${currentThemeState}_${name.replace(/\s+/g, '_')}.doc`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
 
-        // 6. Handle viewport scaling to make sure A4 fits on all screens
+        // 7. Auto-Scale preview for smaller screens
         function adjustPreviewScale() {
-            const wrapper = document.querySelector('.preview-wrapper');
+            const wrapper = document.getElementById('preview-wrapper-id');
             const doc = document.getElementById('biodata-document');
+            const a4Width = 794; // approx A4 width in px for display
             
-            // Standard A4 dimensions in px (approximate for display)
-            const a4Width = 794; 
-            const padding = 40; 
-            const containerWidth = wrapper.parentElement.clientWidth - padding;
-
-            if (containerWidth < a4Width) {
-                const scale = containerWidth / a4Width;
-                doc.style.transform = `scale(${scale})`;
-                // Adjust margin so scaling doesn't leave huge empty spaces
-                doc.style.marginBottom = `-${(297 * 3.78) * (1 - scale)}px`; 
-            } else {
-                doc.style.transform = 'scale(1)';
-                doc.style.marginBottom = '0';
+            if (wrapper && doc) {
+                const containerWidth = wrapper.parentElement.clientWidth - 32; // minus padding
+                if (containerWidth < a4Width) {
+                    const scale = containerWidth / a4Width;
+                    doc.style.transform = `scale(${scale})`;
+                    // adjust margin so the scaled element doesn't leave massive empty space below it
+                    const scaledHeight = 1122 * scale; // 1122 is approx A4 height in px
+                    doc.style.marginBottom = `-${1122 - scaledHeight}px`;
+                } else {
+                    doc.style.transform = 'scale(1)';
+                    doc.style.marginBottom = '0';
+                }
             }
         }
 
@@ -660,6 +741,7 @@
         window.addEventListener('resize', adjustPreviewScale);
         window.onload = () => {
             sync();
+            changeTheme('royal'); // default
             adjustPreviewScale();
         };
     </script>
