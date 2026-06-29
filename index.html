@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aura Biodata Studio | Pro</title>
+    <title>Rajput Biodata</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f59e0b'/%3E%3Cpath d='M32 8 50 16v13c0 13-7.8 22.3-18 27-10.2-4.7-18-14-18-27V16l18-8Z' fill='%230f172a'/%3E%3Cpath d='M32 18 36 27l10 1-7.5 6.5 2.2 10L32 39l-8.7 5.5 2.2-10L18 28l10-1 4-9Z' fill='%23fbbf24'/%3E%3C/svg%3E">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- html2pdf.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Export libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Phosphor Icons (Premium Icons) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <!-- Google Fonts -->
@@ -156,11 +158,11 @@
         <div class="max-w-[1920px] mx-auto px-6 py-3 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-lg shadow-amber-900/20">
-                    <i class="ph-fill ph-sketch-logo text-slate-900 text-2xl"></i>
+                    <i class="ph-fill ph-shield-star text-slate-900 text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-cinzel text-xl font-bold tracking-wide text-white">Aura <span class="font-light text-amber-300">Studio Pro</span></h1>
-                    <p class="text-[9px] text-slate-400 uppercase tracking-widest font-semibold">Premium Biodata Architecture</p>
+                    <h1 class="font-cinzel text-xl font-bold tracking-wide text-white">Rajput <span class="font-light text-amber-300">Biodata</span></h1>
+                    <p class="text-[9px] text-slate-400 uppercase tracking-widest font-semibold">Premium Biodata Generator</p>
                 </div>
             </div>
             
@@ -559,164 +561,150 @@
             document.getElementById('btn-remove-photo').classList.add('hidden');
         }
 
-        // 5. PDF Engine (Upgraded for perfect A4 scaling)
+        // 5. Shared high-fidelity export renderer
+        function safeFileName(value) {
+            return (value || 'Biodata')
+                .trim()
+                .replace(/[\\/:*?"<>|]+/g, '')
+                .replace(/\s+/g, '_') || 'Biodata';
+        }
+
+        function getExportFileName(extension) {
+            const name = safeFileName(document.getElementById('inp-name').value);
+            return `Rajput_Biodata_${currentThemeState}_${name}.${extension}`;
+        }
+
+        async function renderDocumentCanvas(scale = 3) {
+            const element = document.getElementById('biodata-document');
+            const originalStyles = {
+                transform: element.style.transform,
+                marginBottom: element.style.marginBottom,
+                transition: element.style.transition,
+                boxShadow: element.style.boxShadow
+            };
+
+            if (document.fonts && document.fonts.ready) {
+                await document.fonts.ready;
+            }
+
+            element.style.transform = 'none';
+            element.style.marginBottom = '0';
+            element.style.transition = 'none';
+            element.style.boxShadow = 'none';
+
+            await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+            try {
+                return await html2canvas(element, {
+                    scale,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    width: element.offsetWidth,
+                    height: element.offsetHeight,
+                    windowWidth: Math.max(document.documentElement.clientWidth, element.scrollWidth),
+                    windowHeight: Math.max(document.documentElement.clientHeight, element.scrollHeight),
+                    scrollX: 0,
+                    scrollY: 0,
+                    logging: false
+                });
+            } finally {
+                element.style.transform = originalStyles.transform;
+                element.style.marginBottom = originalStyles.marginBottom;
+                element.style.transition = originalStyles.transition;
+                element.style.boxShadow = originalStyles.boxShadow;
+            }
+        }
+
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        // 6. PDF Engine
         async function downloadPDF() {
-            const sourceElement = document.getElementById('biodata-document');
-            const name = document.getElementById('inp-name').value || 'Biodata';
-            const filename = `Aura_${currentThemeState}_${name.replace(/\s+/g, '_')}.pdf`;
-            
+            const filename = getExportFileName('pdf');
+
             document.getElementById('pdf-text').innerText = "Compiling PDF...";
             document.getElementById('pdf-spinner').classList.remove('hidden');
             document.getElementById('pdf-icon').classList.add('hidden');
 
-            // CRITICAL FIX: Create a pristine clone of the document.
-            // This prevents the screen's zoom/transform scaling from breaking the PDF layout.
-            const clone = sourceElement.cloneNode(true);
-            document.body.appendChild(clone);
-            
-            // Force exact A4 dimensions in pixels (96 DPI standard) on the clone
-            clone.style.transform = 'none';
-            clone.style.width = '794px';
-            clone.style.height = '1123px';
-            clone.style.position = 'fixed'; // Hide it from normal flow
-            clone.style.top = '0';
-            clone.style.left = '-9999px'; // Move it completely off-screen
-            clone.style.zIndex = '-1';
-            clone.style.boxShadow = 'none';
-            clone.style.margin = '0';
-
-            const opt = {
-                margin:       0,
-                filename:     filename,
-                image:        { type: 'jpeg', quality: 1.0 },
-                html2canvas:  { 
-                    scale: 3, // Ultra-High resolution
-                    useCORS: true, 
-                    letterRendering: true, 
-                    scrollY: 0, 
-                    scrollX: 0,
-                    width: 794,
-                    height: 1123
-                },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
             try {
-                await html2pdf().set(opt).from(clone).save();
+                const canvas = await renderDocumentCanvas(3);
+                const imageData = canvas.toDataURL('image/jpeg', 1);
+                const jsPDFCtor = window.jspdf && window.jspdf.jsPDF ? window.jspdf.jsPDF : window.jsPDF;
+
+                if (!jsPDFCtor) {
+                    throw new Error('jsPDF library is not available.');
+                }
+
+                const pdf = new jsPDFCtor({
+                    unit: 'mm',
+                    format: 'a4',
+                    orientation: 'portrait',
+                    compress: true
+                });
+
+                pdf.addImage(imageData, 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+                pdf.save(filename);
             } catch (err) {
                 console.error("PDF generation error: ", err);
                 alert("Failed to generate PDF. You can also try 'Print' -> 'Save as PDF'.");
             } finally {
-                // Clean up the clone immediately after generation
-                document.body.removeChild(clone);
                 document.getElementById('pdf-text').innerText = "Download High-Res PDF";
                 document.getElementById('pdf-spinner').classList.add('hidden');
                 document.getElementById('pdf-icon').classList.remove('hidden');
             }
         }
 
-        // 6. Native MS Word HTML Compiler Engine
-        function downloadWord() {
-            const name = document.getElementById('inp-name').value || 'Biodata';
-            
-            // Map themes to Word-friendly hex colors dynamically based on selection
-            const themeColors = {
-                'royal': { border: '#831843', title: '#831843', gold: '#b45309', bg: '#fdfbf7', boxBg: '#831843', boxTxt: '#ffffff' },
-                'sage':  { border: '#059669', title: '#064e3b', gold: '#047857', bg: '#f8faf9', boxBg: '#ecfdf5', boxTxt: '#064e3b' },
-                'pearl': { border: '#e2e8f0', title: '#0f172a', gold: '#334155', bg: '#ffffff', boxBg: '#f8fafc', boxTxt: '#0f172a' },
-                'sapphire': { border: '#1e3a8a', title: '#0f172a', gold: '#d97706', bg: '#f4f6f9', boxBg: '#1e3a8a', boxTxt: '#ffffff' },
-                'marigold': { border: '#dc2626', title: '#7f1d1d', gold: '#ea580c', bg: '#fffdf7', boxBg: '#7f1d1d', boxTxt: '#fef3c7' }
-            };
-            const c = themeColors[currentThemeState];
-
-            const wordHtml = `
+        // 7. Word export keeps the same visual design by embedding the rendered A4 page.
+        async function downloadWord() {
+            try {
+                const canvas = await renderDocumentCanvas(2.5);
+                const imageData = canvas.toDataURL('image/png');
+                const wordHtml = `
             <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
             <head>
                 <meta charset='utf-8'>
                 <title>Biodata</title>
+                <!--[if gte mso 9]>
+                <xml>
+                    <w:WordDocument>
+                        <w:View>Print</w:View>
+                        <w:Zoom>100</w:Zoom>
+                        <w:DoNotOptimizeForBrowser/>
+                    </w:WordDocument>
+                </xml>
+                <![endif]-->
                 <style>
-                    body { font-family: 'Georgia', serif; font-size: 11pt; color: #1e293b; background-color: ${c.bg}; }
-                    .header-box { text-align: center; margin-bottom: 25px; }
-                    h1 { color: ${c.title}; font-size: 28pt; letter-spacing: 4px; margin-bottom: 5px; text-transform: uppercase; }
-                    .subtitle { color: ${c.gold}; font-size: 16pt; font-style: italic; }
-                    h2 { color: ${c.title}; font-size: 14pt; border-bottom: 1px solid ${c.border}; padding-bottom: 4px; margin-top: 20px; text-transform: uppercase; }
-                    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-                    td { padding: 6px 4px; vertical-align: top; line-height: 1.4; }
-                    .label { font-weight: bold; width: 30%; color: #475569; font-size: 10pt; text-transform: uppercase; }
-                    .colon { width: 5%; text-align: center; color: #94a3b8; }
-                    .val { font-size: 12pt; font-weight: bold; color: #0f172a; }
-                    .photo-td { width: 140px; text-align: right; vertical-align: top; }
-                    .photo-img { width: 130px; height: 160px; border: 4px solid ${c.border}; padding: 3px; }
-                    .contact-box { background-color: ${c.boxBg}; color: ${c.boxTxt}; padding: 15px; margin-top: 30px; }
+                    @page WordSection1 { size: 210mm 297mm; margin: 0; }
+                    body { margin: 0; padding: 0; background: #ffffff; }
+                    .WordSection1 { page: WordSection1; width: 210mm; height: 297mm; margin: 0; padding: 0; overflow: hidden; }
+                    img { display: block; width: 210mm; height: 297mm; margin: 0; border: 0; }
                 </style>
             </head>
             <body>
-                <div class="header-box">
-                    <h1>BIO-DATA</h1>
-                    <div class="subtitle">Shree Ganesha Namah</div>
-                </div>
-                
-                <h2>PERSONAL PROFILE</h2>
-                <table style="width: 100%; border: none;">
-                    <tr>
-                        <td style="padding: 0; vertical-align: top;">
-                            <table style="width: 100%;">
-                                <tr><td class="label">Name</td><td class="colon">:</td><td class="val" style="font-size:14pt;">${document.getElementById('inp-name').value}</td></tr>
-                                <tr><td class="label">Date of Birth</td><td class="colon">:</td><td class="val">${document.getElementById('inp-dob').value}</td></tr>
-                                <tr><td class="label">Place of Birth</td><td class="colon">:</td><td class="val">${document.getElementById('inp-pob').value}</td></tr>
-                                <tr><td class="label">Height</td><td class="colon">:</td><td class="val">${document.getElementById('inp-height').value}</td></tr>
-                                <tr><td class="label">Education</td><td class="colon">:</td><td class="val">${document.getElementById('inp-edu').value}</td></tr>
-                                <tr><td class="label">Occupation</td><td class="colon">:</td><td class="val">${document.getElementById('inp-occ').value}</td></tr>
-                                <tr><td class="label">Gotra</td><td class="colon">:</td><td class="val">${document.getElementById('inp-gotra').value}</td></tr>
-                                <tr><td class="label">Native Place</td><td class="colon">:</td><td class="val">${document.getElementById('inp-native').value}</td></tr>
-                            </table>
-                        </td>
-                        ${uploadedPhotoBase64 ? `
-                        <td class="photo-td">
-                            <img src="${uploadedPhotoBase64}" class="photo-img">
-                        </td>
-                        ` : ''}
-                    </tr>
-                </table>
-
-                <h2>FAMILY HERITAGE</h2>
-                <table>
-                    <tr><td class="label">Father's Name</td><td class="colon">:</td><td class="val" style="font-size:13pt;">${document.getElementById('inp-fname').value}</td></tr>
-                    <tr><td class="label">Occupation</td><td class="colon">:</td><td class="val">${document.getElementById('inp-focc').value}</td></tr>
-                    <tr><td class="label">Mother's Name</td><td class="colon">:</td><td class="val" style="font-size:13pt;">${document.getElementById('inp-mname').value}</td></tr>
-                    <tr><td class="label">Occupation</td><td class="colon">:</td><td class="val">${document.getElementById('inp-mocc').value}</td></tr>
-                    <tr><td class="label">Mosad</td><td class="colon">:</td><td class="val">${document.getElementById('inp-mosad').value.replace(/\n/g, '<br>')}</td></tr>
-                    <tr><td class="label">Sibling</td><td class="colon">:</td><td class="val">${document.getElementById('inp-sib').value.replace(/\n/g, '<br>')}</td></tr>
-                </table>
-
-                <div class="contact-box">
-                    <table style="color: ${c.boxTxt}; margin: 0; width: 100%;">
-                        <tr>
-                            <td style="width: 60%; vertical-align: middle;">
-                                <div style="font-size: 8pt; text-transform: uppercase; opacity: 0.9; margin-bottom: 4px;">Residential Address</div>
-                                <div style="font-size: 11pt; font-weight: bold;">${document.getElementById('inp-addr').value.replace(/\n/g, '<br>')}</div>
-                            </td>
-                            <td style="width: 40%; text-align: right; vertical-align: middle; border-left: 1px solid rgba(255,255,255,0.2);">
-                                <div style="font-size: 8pt; text-transform: uppercase; opacity: 0.9; margin-bottom: 4px;">Contact Number</div>
-                                <div style="font-size: 15pt; font-weight: bold;">${document.getElementById('inp-phone').value}</div>
-                            </td>
-                        </tr>
-                    </table>
+                <div class="WordSection1">
+                    <img src="${imageData}" alt="Biodata">
                 </div>
             </body>
             </html>`;
 
-            const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `Aura_${currentThemeState}_${name.replace(/\s+/g, '_')}.doc`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+                const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
+                downloadBlob(blob, getExportFileName('doc'));
+            } catch (err) {
+                console.error("Word generation error: ", err);
+                alert("Failed to generate Word file. Please try again after the preview finishes loading.");
+            }
         }
 
-        // 7. Auto-Scale preview for smaller screens
+        // 8. Auto-Scale preview for smaller screens
         function adjustPreviewScale() {
             const wrapper = document.getElementById('preview-wrapper-id');
             const doc = document.getElementById('biodata-document');
