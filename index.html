@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Biodata Studio | Premium</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Phosphor Icons (Sleek Modern Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Typography System */
+        .font-sans-ui { font-family: 'Montserrat', sans-serif; }
+        .font-serif-doc { font-family: 'Cormorant Garamond', serif; }
+        .font-serif-heading { font-family: 'Playfair Display', serif; }
+        .font-script { font-family: 'Great Vibes', cursive; }
+
+        /* Custom Scrollbar for Editor */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.4); }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .glass-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+            transition: all 0.3s ease;
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: #fbbf24;
+            box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.2);
+            outline: none;
+        }
+
+        /* Document Scale Wrapper for smaller screens */
+        .preview-wrapper {
+            display: flex;
+            justify-content: center;
+            transform-origin: top center;
+            padding-bottom: 40px;
+        }
+
+        /* Perfect A4 Document Configuration */
+        .a4-document {
+            width: 210mm;
+            height: 297mm; /* Exact A4 Height */
+            background: #ffffff;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.1);
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Print Specifics */
+        @media print {
+            body, html { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+            .no-print { display: none !important; }
+            .preview-wrapper { padding: 0 !important; transform: none !important; }
+            .a4-document {
+                box-shadow: none !important; margin: 0 !important; border: none !important;
+                width: 210mm !important; height: 297mm !important; page-break-after: avoid;
+            }
+        }
+
+        /* ----- THEMES ----- */
+        /* Theme 1: Royal Velvet */
+        .theme-royal { background: #fdfbf7; color: #1e293b; }
+        .theme-royal .doc-border { border-color: #831843; } /* Burgundy */
+        .theme-royal .doc-accent-bg { background-color: #831843; color: white; }
+        .theme-royal .doc-accent-text { color: #831843; }
+        .theme-royal .doc-subtext { color: #64748b; }
+        .theme-royal .doc-gold-text { color: #b45309; }
+
+        /* Theme 2: Enchanted Sage */
+        .theme-sage { background: #f8faf9; color: #064e3b; border: 8px solid #ecfdf5; box-sizing: border-box; }
+        .theme-sage .doc-border { border-color: #059669; }
+        .theme-sage .doc-accent-bg { background-color: transparent; border-bottom: 2px solid #10b981; color: #064e3b; padding-left: 0; }
+        .theme-sage .doc-accent-text { color: #064e3b; }
+        .theme-sage .doc-subtext { color: #059669; }
+        .theme-sage .doc-gold-text { color: #047857; }
+
+        /* Theme 3: Minimalist Pearl */
+        .theme-pearl { background: #ffffff; color: #0f172a; border-top: 15px solid #0f172a; }
+        .theme-pearl .doc-border { border-color: #cbd5e1; }
+        .theme-pearl .doc-accent-bg { background-color: #f1f5f9; color: #0f172a; border-left: 4px solid #0f172a; border-radius: 0; }
+        .theme-pearl .doc-accent-text { color: #0f172a; letter-spacing: 2px; }
+        .theme-pearl .doc-subtext { color: #475569; }
+        .theme-pearl .doc-gold-text { color: #334155; }
+
+        /* Table structural styling inside document */
+        .biodata-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        .biodata-label { width: 32%; font-weight: 600; font-family: 'Montserrat', sans-serif; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; vertical-align: top; padding-top: 2px; }
+        .biodata-colon { width: 3%; vertical-align: top; padding-top: 2px; }
+        .biodata-value { width: 65%; font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 600; vertical-align: top; line-height: 1.4; }
+        
+        .image-mask {
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 C 80 0, 100 20, 100 50 C 100 80, 80 100, 50 100 C 20 100, 0 80, 0 50 C 0 20, 20 0, 50 0 Z"/></svg>');
+            mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 0 C 80 0, 100 20, 100 50 C 100 80, 80 100, 50 100 C 20 100, 0 80, 0 50 C 0 20, 20 0, 50 0 Z"/></svg>');
+            mask-size: cover;
+        }
+
+        /* Animated Background */
+        .bg-mesh {
+            background-color: #020617;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(30, 27, 75, 1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(15, 23, 42, 1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(67, 20, 7, 0.8) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+    </style>
+</head>
+
+<body class="bg-mesh font-sans-ui text-slate-200 h-screen overflow-hidden flex flex-col selection:bg-amber-500/30">
+
+    <!-- Top Navigation Bar -->
+    <header class="glass-panel border-b-0 border-white/5 z-50 no-print flex-shrink-0">
+        <div class="max-w-[1920px] mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-300 to-amber-600 flex items-center justify-center shadow-lg shadow-amber-900/20">
+                    <i class="ph-fill ph-sketch-logo text-slate-900 text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif-heading text-2xl font-bold tracking-wide text-white">Aura <span class="font-light text-amber-200">Studio</span></h1>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">Premium Biodata Generator</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="downloadWord()" class="group relative px-5 py-2.5 rounded-lg font-medium text-sm text-white overflow-hidden transition-all hover:scale-105">
+                    <div class="absolute inset-0 bg-white/10 group-hover:bg-white/20 transition-colors border border-white/20 rounded-lg"></div>
+                    <div class="relative flex items-center gap-2">
+                        <i class="ph ph-file-doc text-lg"></i> Export Word
+                    </div>
+                </button>
+                <button onclick="downloadPDF()" class="group relative px-6 py-2.5 rounded-lg font-medium text-sm text-slate-900 overflow-hidden transition-all hover:scale-105 shadow-[0_0_20px_rgba(251,191,36,0.3)]">
+                    <div class="absolute inset-0 bg-gradient-to-r from-amber-300 to-amber-500 transition-all group-hover:opacity-90"></div>
+                    <div class="relative flex items-center gap-2">
+                        <i id="pdf-icon" class="ph-bold ph-download-simple text-lg"></i>
+                        <i id="pdf-spinner" class="ph-bold ph-spinner-gap text-lg animate-spin hidden"></i>
+                        <span id="pdf-text">Render High-Res PDF</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 flex overflow-hidden max-w-[1920px] mx-auto w-full">
+        
+        <!-- LEFT PANEL: Editor (Form) -->
+        <aside class="w-full lg:w-[480px] h-full flex flex-col no-print border-r border-white/5 bg-slate-900/40 backdrop-blur-md relative z-10">
+            
+            <div class="flex-1 overflow-y-auto p-6 space-y-8 pb-32">
+                
+                <!-- Section: Design & Aesthetics -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 border-b border-white/10 pb-2">
+                        <div class="w-6 h-6 rounded bg-amber-500/20 text-amber-400 flex items-center justify-center"><i class="ph-fill ph-palette"></i></div>
+                        <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-300">Design Aesthetic</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-3">
+                        <button onclick="changeTheme('royal')" id="btn-theme-royal" class="theme-btn relative aspect-[4/3] rounded-xl overflow-hidden border-2 border-amber-400 transition-all hover:scale-[1.02]">
+                            <div class="absolute inset-0 bg-gradient-to-br from-[#831843] to-[#4c1d95]"></div>
+                            <div class="absolute inset-x-0 bottom-0 bg-black/50 backdrop-blur-sm py-1.5 text-[10px] font-bold tracking-wider text-amber-200">ROYAL VELVET</div>
+                        </button>
+                        <button onclick="changeTheme('sage')" id="btn-theme-sage" class="theme-btn relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 transition-all hover:scale-[1.02] opacity-70 hover:opacity-100">
+                            <div class="absolute inset-0 bg-gradient-to-br from-[#064e3b] to-[#047857]"></div>
+                            <div class="absolute inset-x-0 bottom-0 bg-black/50 backdrop-blur-sm py-1.5 text-[10px] font-bold tracking-wider text-emerald-200">ENCHANTED SAGE</div>
+                        </button>
+                        <button onclick="changeTheme('pearl')" id="btn-theme-pearl" class="theme-btn relative aspect-[4/3] rounded-xl overflow-hidden border border-white/10 transition-all hover:scale-[1.02] opacity-70 hover:opacity-100">
+                            <div class="absolute inset-0 bg-gradient-to-br from-[#f8fafc] to-[#cbd5e1]"></div>
+                            <div class="absolute inset-x-0 bottom-0 bg-black/50 backdrop-blur-sm py-1.5 text-[10px] font-bold tracking-wider text-slate-300">MINIMAL PEARL</div>
+                        </button>
+                    </div>
+
+                    <!-- Photo Upload area inside Design -->
+                    <div class="mt-4 p-4 rounded-xl glass-input relative group border-dashed border-white/20 hover:border-amber-400/50 cursor-pointer transition-colors" onclick="document.getElementById('inp-photo').click()">
+                        <input type="file" id="inp-photo" accept="image/*" onchange="handlePhotoUpload(event)" class="hidden">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-slate-400 group-hover:text-amber-400 group-hover:scale-110 transition-all overflow-hidden" id="photo-preview-ui">
+                                <i class="ph ph-camera text-xl"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-xs font-semibold text-white">Upload Portrait</h3>
+                                <p class="text-[10px] text-slate-400 mt-0.5">High-res square or portrait recommended.</p>
+                            </div>
+                            <button id="btn-remove-photo" onclick="removePhoto(event)" class="hidden w-8 h-8 rounded-full bg-red-500/10 text-red-400 hover:bg-red-500/20 flex items-center justify-center transition-colors">
+                                <i class="ph ph-trash text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Personal Details -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 border-b border-white/10 pb-2">
+                        <div class="w-6 h-6 rounded bg-blue-500/20 text-blue-400 flex items-center justify-center"><i class="ph-fill ph-user"></i></div>
+                        <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-300">Personal Data</h2>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Full Name</label>
+                            <input type="text" id="inp-name" oninput="sync()" value="Vrajrajsinh Mukeshkumar Gohil" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Date of Birth</label>
+                                <input type="text" id="inp-dob" oninput="sync()" value="06/11/1998" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Place of Birth</label>
+                                <input type="text" id="inp-pob" oninput="sync()" value="Vadodara" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Height</label>
+                                <input type="text" id="inp-height" oninput="sync()" value="5'5&quot;" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Gotra</label>
+                                <input type="text" id="inp-gotra" oninput="sync()" value="Gautam" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Native Place</label>
+                            <input type="text" id="inp-native" oninput="sync()" value="Vadia, Ta: Savli, Dist: Vadodara" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Education</label>
+                            <textarea id="inp-edu" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">B.Tech Information Technology from Parul University</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Occupation</label>
+                            <textarea id="inp-occ" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">Flutter/Software Developer at DSPL. Pvt. Ltd</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Family Background -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 border-b border-white/10 pb-2">
+                        <div class="w-6 h-6 rounded bg-emerald-500/20 text-emerald-400 flex items-center justify-center"><i class="ph-fill ph-users-three"></i></div>
+                        <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-300">Family Lineage</h2>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Father's Name</label>
+                                <input type="text" id="inp-fname" oninput="sync()" value="Mukeshkumar Madhusinh Gohil" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Occupation</label>
+                                <input type="text" id="inp-focc" oninput="sync()" value="Sr. Advocate, Halol Court" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Mother's Name</label>
+                                <input type="text" id="inp-mname" oninput="sync()" value="Bharatiba Mukeshkumar Gohil" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Occupation</label>
+                                <input type="text" id="inp-mocc" oninput="sync()" value="Housewife" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Mosad (Maternal Side)</label>
+                            <textarea id="inp-mosad" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">Arvindsinh Amarsinh Sindha (Mama), Dhuvaran, Dist: Kheda. At present: Vadodara</textarea>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Sibling</label>
+                            <textarea id="inp-sib" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">Sister (Elder) - Krupaba Alaukiksinh Chavda (M.Pharm, MSc Public Health) - Currently in UK</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section: Contact Details -->
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3 border-b border-white/10 pb-2">
+                        <div class="w-6 h-6 rounded bg-purple-500/20 text-purple-400 flex items-center justify-center"><i class="ph-fill ph-map-pin"></i></div>
+                        <h2 class="text-sm font-semibold tracking-widest uppercase text-slate-300">Contact</h2>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Contact No.</label>
+                            <input type="text" id="inp-phone" oninput="sync()" value="+91-9638027766" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 ml-1">Address</label>
+                            <textarea id="inp-addr" oninput="sync()" rows="2" class="w-full glass-input rounded-lg px-4 py-2.5 text-sm resize-none">150, Madhuvan Park Society, Kanjari Road, Halol, Dist: Panchmahals</textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- RIGHT PANEL: Live Preview -->
+        <section class="flex-1 overflow-y-auto pt-10 pb-20 px-4 relative">
+            <div class="preview-wrapper w-full h-full">
+                
+                <!-- THE A4 CANVAS -->
+                <div id="biodata-document" class="a4-document theme-royal px-[18mm] py-[22mm] flex flex-col">
+                    
+                    <!-- Decorative Corners (SVG) -->
+                    <svg class="absolute top-0 left-0 w-32 h-32 doc-accent-text opacity-20 pointer-events-none" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+                    <svg class="absolute top-0 right-0 w-32 h-32 doc-accent-text opacity-20 pointer-events-none transform rotate-90" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+                    <svg class="absolute bottom-0 left-0 w-32 h-32 doc-accent-text opacity-20 pointer-events-none transform -rotate-90" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+                    <svg class="absolute bottom-0 right-0 w-32 h-32 doc-accent-text opacity-20 pointer-events-none transform rotate-180" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2"><path d="M10,10 L40,10 M10,10 L10,40" /><circle cx="10" cy="10" r="3" fill="currentColor"/></svg>
+
+                    <!-- Watermark -->
+                    <div class="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
+                        <svg class="w-[400px] h-[400px] doc-accent-text" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2h2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 1.83-.62 3.51-1.66 4.85z"/></svg>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="text-center mb-10 relative z-10">
+                        <div class="inline-flex flex-col items-center">
+                            <h1 class="font-serif-heading text-5xl font-bold uppercase tracking-[0.25em] doc-accent-text mb-2">Bio-Data</h1>
+                            <div class="w-full h-px bg-current doc-subtext opacity-30 my-1"></div>
+                            <p class="font-script text-3xl doc-gold-text capitalize mt-2">Shree Ganesha Namah</p>
+                        </div>
+                    </div>
+
+                    <!-- MAIN CONTENT WRAPPER -->
+                    <div class="flex-1 flex flex-col gap-8 relative z-10">
+                        
+                        <!-- Top Row: Personal Details & Photo -->
+                        <div class="flex gap-6 items-start">
+                            
+                            <div class="flex-1">
+                                <div class="mb-4 pb-2 border-b doc-border relative">
+                                    <h2 class="font-serif-heading text-xl font-bold uppercase tracking-widest doc-accent-text">Personal Details</h2>
+                                </div>
+                                
+                                <table class="biodata-table">
+                                    <tbody>
+                                        <tr><td class="biodata-label doc-subtext">Name</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-name"></td></tr>
+                                        <tr><td class="biodata-label doc-subtext">Date of Birth</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-dob"></td></tr>
+                                        <tr><td class="biodata-label doc-subtext">Place of Birth</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-pob"></td></tr>
+                                        <tr><td class="biodata-label doc-subtext">Height</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-height"></td></tr>
+                                        <tr><td class="biodata-label doc-subtext">Education</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-edu"></td></tr>
+                                        <tr><td class="biodata-label doc-subtext">Occupation</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-occ"></td></tr>
+                                        <tr><td class="biodata-label doc-subtext">Gotra</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-gotra"></td></tr>
+                                        <tr><td class="biodata-label doc-subtext">Native Place</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-native"></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Floating Photo Frame -->
+                            <div id="photo-container" class="hidden w-[38mm] h-[48mm] shrink-0 border-4 doc-border p-1 bg-white shadow-xl relative z-10 rounded-sm transform rotate-2">
+                                <img id="out-photo" src="" alt="Profile" class="w-full h-full object-cover rounded-sm filter contrast-105">
+                                <!-- Tape effect -->
+                                <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-10 h-3 bg-white/60 backdrop-blur-sm -rotate-3 border border-black/5 shadow-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- Middle Row: Family Background -->
+                        <div>
+                            <div class="mb-4 pb-2 border-b doc-border relative">
+                                <h2 class="font-serif-heading text-xl font-bold uppercase tracking-widest doc-accent-text">Family Background</h2>
+                            </div>
+                            
+                            <table class="biodata-table">
+                                <tbody>
+                                    <tr><td class="biodata-label doc-subtext w-[25%]">Father's Name</td><td class="biodata-colon doc-subtext w-[3%]">:</td><td class="biodata-value w-[72%]" id="out-fname"></td></tr>
+                                    <tr><td class="biodata-label doc-subtext">Occupation</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-focc"></td></tr>
+                                    <tr><td class="biodata-label doc-subtext">Mother's Name</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-mname"></td></tr>
+                                    <tr><td class="biodata-label doc-subtext">Occupation</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value" id="out-mocc"></td></tr>
+                                    <tr><td class="biodata-label doc-subtext">Mosad</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value whitespace-pre-line" id="out-mosad"></td></tr>
+                                    <tr><td class="biodata-label doc-subtext">Sibling</td><td class="biodata-colon doc-subtext">:</td><td class="biodata-value whitespace-pre-line" id="out-sib"></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Bottom Row: Contact -->
+                        <div class="mt-auto pt-6">
+                            <div class="doc-accent-bg p-5 rounded-sm relative overflow-hidden">
+                                <!-- Subtle bg pattern in contact box -->
+                                <svg class="absolute inset-0 w-full h-full opacity-10" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="100" x2="100" y2="0" stroke="currentColor" stroke-width="0.5"/><line x1="0" y1="90" x2="100" y2="-10" stroke="currentColor" stroke-width="0.5"/><line x1="0" y1="80" x2="100" y2="-20" stroke="currentColor" stroke-width="0.5"/></svg>
+                                
+                                <div class="relative z-10 flex gap-6 items-center">
+                                    <div class="flex-1">
+                                        <div class="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-1">Residential Address</div>
+                                        <div class="font-serif-doc text-[15px] font-semibold leading-snug" id="out-addr"></div>
+                                    </div>
+                                    <div class="w-px h-10 bg-current opacity-20"></div>
+                                    <div class="shrink-0 text-right">
+                                        <div class="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-1">Contact Number</div>
+                                        <div class="font-sans-ui text-[18px] tracking-wider font-bold" id="out-phone"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let currentThemeState = 'royal';
+        let uploadedPhotoBase64 = ''; 
+
+        // 1. Sync Live Data
+        function sync() {
+            const fields = ['name', 'dob', 'pob', 'height', 'gotra', 'edu', 'occ', 'native', 'fname', 'focc', 'mname', 'mocc', 'mosad', 'sib', 'addr', 'phone'];
+            fields.forEach(field => {
+                const el = document.getElementById('out-' + field);
+                const inp = document.getElementById('inp-' + field);
+                if (el && inp) {
+                    el.innerText = inp.value;
+                }
+            });
+        }
+
+        // 2. Theme Switching Logic
+        function changeTheme(theme) {
+            currentThemeState = theme;
+            
+            // Update Document Classes
+            const doc = document.getElementById('biodata-document');
+            doc.classList.remove('theme-royal', 'theme-sage', 'theme-pearl');
+            doc.classList.add('theme-' + theme);
+
+            // Update UI Button states
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('border-amber-400', 'border-2');
+                btn.classList.add('border-white/10', 'border', 'opacity-70');
+            });
+
+            const activeBtn = document.getElementById('btn-theme-' + theme);
+            if(activeBtn) {
+                activeBtn.classList.remove('border-white/10', 'border', 'opacity-70');
+                activeBtn.classList.add('border-amber-400', 'border-2');
+            }
+        }
+
+        // 3. Image Upload Logic
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedPhotoBase64 = e.target.result;
+                    
+                    // Update Document Output
+                    document.getElementById('out-photo').src = uploadedPhotoBase64;
+                    document.getElementById('photo-container').classList.remove('hidden');
+                    
+                    // Update Editor UI
+                    const previewUI = document.getElementById('photo-preview-ui');
+                    previewUI.innerHTML = `<img src="${uploadedPhotoBase64}" class="w-full h-full object-cover">`;
+                    document.getElementById('btn-remove-photo').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removePhoto(event) {
+            event.stopPropagation(); // Prevent triggering the upload click
+            uploadedPhotoBase64 = '';
+            document.getElementById('inp-photo').value = '';
+            
+            // Revert Document Output
+            document.getElementById('out-photo').src = '';
+            document.getElementById('photo-container').classList.add('hidden');
+            
+            // Revert Editor UI
+            const previewUI = document.getElementById('photo-preview-ui');
+            previewUI.innerHTML = `<i class="ph ph-camera text-xl"></i>`;
+            document.getElementById('btn-remove-photo').classList.add('hidden');
+        }
+
+        // 4. High-Fidelity PDF Engine (html2pdf)
+        async function downloadPDF() {
+            const element = document.getElementById('biodata-document');
+            const name = document.getElementById('inp-name').value || 'Biodata';
+            const filename = `Aura_Biodata_${name.replace(/\s+/g, '_')}.pdf`;
+            
+            // Loading State
+            document.getElementById('pdf-text').innerText = "Rendering Engine...";
+            document.getElementById('pdf-spinner').classList.remove('hidden');
+            document.getElementById('pdf-icon').classList.add('hidden');
+
+            // Force scale up right before render to ensure sharp text
+            const originalTransform = element.style.transform;
+            element.style.transform = "scale(1)"; 
+
+            const opt = {
+                margin:       0,
+                filename:     filename,
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { scale: 3, useCORS: true, letterRendering: true, windowWidth: element.scrollWidth, windowHeight: element.scrollHeight },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            try {
+                await html2pdf().set(opt).from(element).save();
+            } catch (err) {
+                console.error("PDF generation error: ", err);
+                alert("An error occurred generating the PDF. Please try again.");
+            }
+
+            // Revert State
+            element.style.transform = originalTransform;
+            document.getElementById('pdf-text').innerText = "Render High-Res PDF";
+            document.getElementById('pdf-spinner').classList.add('hidden');
+            document.getElementById('pdf-icon').classList.remove('hidden');
+        }
+
+        // 5. Native MS Word HTML Compiler Engine
+        function downloadWord() {
+            const name = document.getElementById('inp-name').value || 'Biodata';
+            
+            // Map themes to Word-friendly hex colors
+            const themeColors = {
+                'royal': { border: '#831843', title: '#831843', gold: '#b45309', bg: '#fdfbf7' },
+                'sage':  { border: '#059669', title: '#064e3b', gold: '#047857', bg: '#f8faf9' },
+                'pearl': { border: '#cbd5e1', title: '#0f172a', gold: '#334155', bg: '#ffffff' }
+            };
+            const c = themeColors[currentThemeState];
+
+            const wordHtml = `
+            <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+            <head>
+                <meta charset='utf-8'>
+                <title>Biodata</title>
+                <style>
+                    body { font-family: 'Georgia', serif; font-size: 11pt; color: #1e293b; background-color: ${c.bg}; }
+                    .header-box { text-align: center; margin-bottom: 30px; }
+                    h1 { color: ${c.title}; font-size: 28pt; letter-spacing: 4px; margin-bottom: 5px; text-transform: uppercase; }
+                    .subtitle { color: ${c.gold}; font-size: 16pt; font-style: italic; font-family: 'Palatino Linotype', serif; }
+                    h2 { color: ${c.title}; font-size: 14pt; border-bottom: 1px solid ${c.border}; padding-bottom: 5px; margin-top: 25px; text-transform: uppercase; letter-spacing: 1px; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                    td { padding: 6px 4px; vertical-align: top; line-height: 1.4; }
+                    .label { font-weight: bold; width: 30%; color: #475569; font-size: 10pt; text-transform: uppercase; }
+                    .colon { width: 5%; text-align: center; color: #94a3b8; }
+                    .val { font-size: 12pt; font-weight: bold; color: #0f172a; }
+                    .photo-td { width: 140px; text-align: right; vertical-align: top; }
+                    .photo-img { width: 120px; height: 150px; border: 3px solid ${c.border}; padding: 3px; }
+                    .contact-box { background-color: ${c.border}; padding: 15px; margin-top: 30px; }
+                    .contact-text { color: #ffffff; }
+                </style>
+            </head>
+            <body>
+                <div class="header-box">
+                    <h1>BIO-DATA</h1>
+                    <div class="subtitle">Shree Ganesha Namah</div>
+                </div>
+                
+                <h2>PERSONAL DETAILS</h2>
+                <table style="width: 100%; border: none;">
+                    <tr>
+                        <td style="padding: 0; vertical-align: top;">
+                            <table style="width: 100%;">
+                                <tr><td class="label">Name</td><td class="colon">:</td><td class="val">${document.getElementById('inp-name').value}</td></tr>
+                                <tr><td class="label">Date of Birth</td><td class="colon">:</td><td class="val">${document.getElementById('inp-dob').value}</td></tr>
+                                <tr><td class="label">Place of Birth</td><td class="colon">:</td><td class="val">${document.getElementById('inp-pob').value}</td></tr>
+                                <tr><td class="label">Height</td><td class="colon">:</td><td class="val">${document.getElementById('inp-height').value}</td></tr>
+                                <tr><td class="label">Education</td><td class="colon">:</td><td class="val">${document.getElementById('inp-edu').value}</td></tr>
+                                <tr><td class="label">Occupation</td><td class="colon">:</td><td class="val">${document.getElementById('inp-occ').value}</td></tr>
+                                <tr><td class="label">Gotra</td><td class="colon">:</td><td class="val">${document.getElementById('inp-gotra').value}</td></tr>
+                                <tr><td class="label">Native Place</td><td class="colon">:</td><td class="val">${document.getElementById('inp-native').value}</td></tr>
+                            </table>
+                        </td>
+                        ${uploadedPhotoBase64 ? `
+                        <td class="photo-td">
+                            <img src="${uploadedPhotoBase64}" class="photo-img">
+                        </td>
+                        ` : ''}
+                    </tr>
+                </table>
+
+                <h2>FAMILY BACKGROUND</h2>
+                <table>
+                    <tr><td class="label">Father's Name</td><td class="colon">:</td><td class="val">${document.getElementById('inp-fname').value}</td></tr>
+                    <tr><td class="label">Occupation</td><td class="colon">:</td><td class="val">${document.getElementById('inp-focc').value}</td></tr>
+                    <tr><td class="label">Mother's Name</td><td class="colon">:</td><td class="val">${document.getElementById('inp-mname').value}</td></tr>
+                    <tr><td class="label">Occupation</td><td class="colon">:</td><td class="val">${document.getElementById('inp-mocc').value}</td></tr>
+                    <tr><td class="label">Mosad</td><td class="colon">:</td><td class="val">${document.getElementById('inp-mosad').value.replace(/\n/g, '<br>')}</td></tr>
+                    <tr><td class="label">Sibling</td><td class="colon">:</td><td class="val">${document.getElementById('inp-sib').value.replace(/\n/g, '<br>')}</td></tr>
+                </table>
+
+                <div class="contact-box">
+                    <table style="color: white; margin: 0;">
+                        <tr>
+                            <td style="width: 60%;">
+                                <div style="font-size: 9pt; text-transform: uppercase; opacity: 0.8;">Residential Address</div>
+                                <div style="font-size: 11pt; font-weight: bold;">${document.getElementById('inp-addr').value.replace(/\n/g, '<br>')}</div>
+                            </td>
+                            <td style="width: 40%; text-align: right; border-left: 1px solid rgba(255,255,255,0.3);">
+                                <div style="font-size: 9pt; text-transform: uppercase; opacity: 0.8;">Contact Number</div>
+                                <div style="font-size: 14pt; font-weight: bold;">${document.getElementById('inp-phone').value}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </body>
+            </html>`;
+
+            const blob = new Blob(['\ufeff', wordHtml], { type: 'application/msword' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Aura_Biodata_${name.replace(/\s+/g, '_')}.doc`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 6. Handle viewport scaling to make sure A4 fits on all screens
+        function adjustPreviewScale() {
+            const wrapper = document.querySelector('.preview-wrapper');
+            const doc = document.getElementById('biodata-document');
+            
+            // Standard A4 dimensions in px (approximate for display)
+            const a4Width = 794; 
+            const padding = 40; 
+            const containerWidth = wrapper.parentElement.clientWidth - padding;
+
+            if (containerWidth < a4Width) {
+                const scale = containerWidth / a4Width;
+                doc.style.transform = `scale(${scale})`;
+                // Adjust margin so scaling doesn't leave huge empty spaces
+                doc.style.marginBottom = `-${(297 * 3.78) * (1 - scale)}px`; 
+            } else {
+                doc.style.transform = 'scale(1)';
+                doc.style.marginBottom = '0';
+            }
+        }
+
+        // Initialize
+        window.addEventListener('resize', adjustPreviewScale);
+        window.onload = () => {
+            sync();
+            adjustPreviewScale();
+        };
+    </script>
+</body>
+</html>
